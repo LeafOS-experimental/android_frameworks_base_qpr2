@@ -68,15 +68,9 @@
     <LinearLayout
         android:id="@+id/volume_dialog_floating_sliders_container"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/volume_dialog_floating_sliders_vertical_padding_negative"
-        android:layout_marginBottom="@dimen/volume_dialog_floating_sliders_vertical_padding_negative"
-        android:divider="@drawable/volume_dialog_floating_sliders_spacer"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        android:showDividers="middle|beginning|end"
-        app:layout_constraintBottom_toBottomOf="@id/volume_dialog_main_slider_container"
-        app:layout_constraintEnd_toStartOf="@id/volume_dialog_background"
-        app:layout_constraintTop_toTopOf="@id/volume_dialog_main_slider_container" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom | right"
+        android:layout_marginLeft="@dimen/volume_tool_tip_horizontal_margin"
+        android:layout_marginRight="@dimen/volume_tool_tip_horizontal_margin"/>
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</FrameLayout>
