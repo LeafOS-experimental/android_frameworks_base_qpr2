@@ -17,7 +17,6 @@
 package com.android.systemui.navigationbar;
 
 import static com.android.systemui.navigationbar.gestural.EdgeBackGestureHandler.DEBUG_MISSING_GESTURE_TAG;
-import static com.android.systemui.shared.recents.utilities.Utilities.isLargeScreen;
 import static com.android.wm.shell.Flags.enableTaskbarNavbarUnification;
 import static com.android.wm.shell.Flags.enableTaskbarOnPhones;
 
@@ -76,6 +75,7 @@ import javax.inject.Inject;
 public class NavigationBarControllerImpl implements
         ConfigurationController.ConfigurationListener,
         NavigationModeController.ModeChangedListener,
+        OverviewProxyService.OverviewProxyListener,
         Dumpable, NavigationBarController {
 
     private static final String TAG = NavigationBarControllerImpl.class.getSimpleName();
@@ -90,15 +90,11 @@ public class NavigationBarControllerImpl implements
     private final NavBarHelper mNavBarHelper;
     private int mNavMode;
     /**
-     * Indicates whether the active display is a large screen, e.g. tablets, foldable devices in
-     * the unfolded state.
-     */
-    @VisibleForTesting boolean mIsLargeScreen;
-    /**
      * Indicates whether the device is a phone, rather than everything else (e.g. foldables,
      * tablets) is considered not a handheld device.
      */
     @VisibleForTesting boolean mIsPhone;
+    @VisibleForTesting boolean mTaskbarShowing;
 
     /** A displayId - nav bar maps. */
     @VisibleForTesting
@@ -151,6 +147,8 @@ public class NavigationBarControllerImpl implements
                 taskStackChangeListeners);
         mIsLargeScreen = isLargeScreen(mContext);
         mIsPhone = determineIfPhone(mContext, deviceStateManager);
+        mIsPhone = mContext.getResources().getIntArray(R.array.config_foldedDeviceStates).length == 0;
+        overviewProxyService.addCallback(this);
         dumpManager.registerDumpable(this);
     }
 
@@ -165,10 +163,9 @@ public class NavigationBarControllerImpl implements
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        boolean isOldConfigLargeScreen = mIsLargeScreen;
-        mIsLargeScreen = isLargeScreen(mContext);
+        boolean oldShouldShowTaskbar = shouldShowTaskbar();
         boolean willApplyConfig = mConfigChanges.applyNewConfig(mContext.getResources());
-        boolean largeScreenChanged = mIsLargeScreen != isOldConfigLargeScreen;
+        boolean largeScreenChanged = shouldShowTaskbar() != oldShouldShowTaskbar;
         // TODO(b/332635834): Disable this logging once b/332635834 is fixed.
         Log.i(DEBUG_MISSING_GESTURE_TAG, "NavbarController: newConfig=" + newConfig
                 + " mTaskbarDelegate initialized=" + mTaskbarDelegate.isInitialized()
@@ -211,6 +208,16 @@ public class NavigationBarControllerImpl implements
                 navBar.getView().updateStates();
             }
         });
+    }
+
+    @Override
+    public void onTaskbarEnabled(boolean enabled) {
+        boolean oldShouldShowTaskbar = shouldShowTaskbar();
+        mTaskbarShowing = enabled;
+        boolean largeScreenChanged = shouldShowTaskbar() != oldShouldShowTaskbar;
+        if (largeScreenChanged) {
+            updateNavbarForTaskbar();
+        }
     }
 
     private boolean shouldCreateNavBarAndTaskBar(int displayId) {
@@ -264,10 +271,15 @@ public class NavigationBarControllerImpl implements
 
     @VisibleForTesting
     boolean supportsTaskbar() {
+<<<<<<< HEAD
         // Enable for tablets, unfolded state on a foldable device, (non handheld AND flag is set),
         // or handheld when enableTaskbarOnPhones() returns true.
         boolean foldedOrPhone = !mIsPhone || enableTaskbarOnPhones();
         return mIsLargeScreen || (foldedOrPhone && enableTaskbarNavbarUnification());
+=======
+        // Enable for tablets, unfolded state on a foldable device or (non handheld AND flag is set)
+        return shouldShowTaskbar() || (!mIsPhone && enableTaskbarNavbarUnification());
+>>>>>>> 95367591a1c0 (SystemUI: Add API for runtime taskbar config)
     }
 
     private final CommandQueue.Callbacks mCommandQueueCallbacks = new CommandQueue.Callbacks() {
@@ -280,7 +292,6 @@ public class NavigationBarControllerImpl implements
         @Override
         public void onDisplayReady(int displayId) {
             Display display = mDisplayManager.getDisplay(displayId);
-            mIsLargeScreen = isLargeScreen(mContext);
             createNavigationBar(display, null /* savedState */, null /* result */);
         }
 
@@ -449,6 +460,10 @@ public class NavigationBarControllerImpl implements
         }
     }
 
+    private boolean shouldShowTaskbar() {
+        return mTaskbarShowing;
+    }
+
     @Override
     public @Nullable NavigationBarView getDefaultNavigationBarView() {
         return getNavigationBarView(mDisplayTracker.getDefaultDisplayId());
@@ -483,7 +498,7 @@ public class NavigationBarControllerImpl implements
     @NeverCompile
     @Override
     public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
-        pw.println("mIsLargeScreen=" + mIsLargeScreen);
+        pw.println("mTaskbarShowing=" + mTaskbarShowing);
         pw.println("mNavMode=" + mNavMode);
         for (int i = 0; i < mNavigationBars.size(); i++) {
             if (i > 0) {
