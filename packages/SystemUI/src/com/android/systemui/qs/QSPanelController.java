@@ -147,6 +147,10 @@ public class QSPanelController extends QSPanelControllerBase<QSPanel> {
         mTunerService.addTunable(mView, QS_SHOW_BRIGHTNESS);
         mView.updateResources();
         mView.setSceneContainerEnabled(mSceneContainerEnabled);
+        mTunerService.addTunable(mView, QSPanel.QS_LAYOUT_COLUMNS);
+        mTunerService.addTunable(mView, QSPanel.QS_LAYOUT_COLUMNS_LANDSCAPE);
+        mTunerService.addTunable(mView, QSPanel.QS_LAYOUT_ROWS);
+        mTunerService.addTunable(mView, QSPanel.QS_LAYOUT_ROWS_LANDSCAPE);
         if (mView.isListening()) {
             refreshAllTiles();
         }
