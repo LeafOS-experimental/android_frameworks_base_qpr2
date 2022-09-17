@@ -342,6 +342,7 @@ public class InternetDialogDelegate implements
         }
         mLifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
         mMobileNetworkLayout.setOnClickListener(null);
+        mMobileNetworkLayout.setOnLongClickListener(null);
         mConnectedWifListLayout.setOnClickListener(null);
         if (mSecondaryMobileNetworkLayout != null) {
             mSecondaryMobileNetworkLayout.setOnClickListener(null);
@@ -454,6 +455,16 @@ public class InternetDialogDelegate implements
                         dialog.getContext(), mDefaultDataSubId, isChecked, false);
             }
         });
+<<<<<<< HEAD
+=======
+        mMobileNetworkLayout.setOnLongClickListener(v -> {
+                mInternetDialogController.launchMobileNetworkSetting(v);
+                return true;
+        });
+        mHotspotLayout.setOnClickListener(mInternetDialogController::launchHotspotSetting);
+        mHotspotToggle.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> mInternetDialogController.setHotspotEnabled(isChecked));
+>>>>>>> 9cd5555fc2f7 (InternetDialog: Launch mobile network settings on long press)
         mConnectedWifListLayout.setOnClickListener(this::onClickConnectedWifi);
         mSeeAllLayout.setOnClickListener(this::onClickSeeMoreButton);
         mWiFiToggle.setOnClickListener(v -> {
