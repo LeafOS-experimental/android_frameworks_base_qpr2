@@ -15,6 +15,7 @@
 package com.android.systemui.qs.customize;
 
 import static com.android.systemui.Flags.gsfQuickSettings;
+import static com.android.systemui.util.qs.QSStyleUtils.isA11Style;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,6 +26,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -149,6 +151,11 @@ public class TileAdapter extends RecyclerView.Adapter<Holder> implements TileSta
         mSizeLookup.setSpanIndexCacheEnabled(true);
         mTempTextView = new TextView(context);
         mMinTileViewHeight = context.getResources().getDimensionPixelSize(R.dimen.qs_tile_height);
+
+        if (isA11Style()) {
+            mNumColumns = Settings.System.getInt(context.getContentResolver(),
+                    Settings.System.QS_NUM_COLUMNS, mNumColumns);
+        }
     }
 
     @Override
