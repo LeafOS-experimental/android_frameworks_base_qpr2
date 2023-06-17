@@ -19,11 +19,13 @@ package com.android.systemui.statusbar.phone.ui;
 import static com.android.systemui.statusbar.phone.StatusBarIconHolder.TYPE_BINDABLE;
 import static com.android.systemui.statusbar.phone.StatusBarIconHolder.TYPE_ICON;
 import static com.android.systemui.statusbar.phone.StatusBarIconHolder.TYPE_MOBILE_NEW;
+import static com.android.systemui.statusbar.phone.StatusBarIconHolder.TYPE_NETWORK_TRAFFIC;
 import static com.android.systemui.statusbar.phone.StatusBarIconHolder.TYPE_WIFI_NEW;
 
 import android.annotation.Nullable;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -47,6 +49,7 @@ import com.android.systemui.statusbar.pipeline.shared.ui.view.ModernStatusBarVie
 import com.android.systemui.statusbar.pipeline.wifi.ui.WifiUiAdapter;
 import com.android.systemui.statusbar.pipeline.wifi.ui.view.ModernStatusBarWifiView;
 import com.android.systemui.statusbar.pipeline.wifi.ui.viewmodel.LocationBasedWifiViewModel;
+import com.android.systemui.statusbar.policy.NetworkTrafficSB;
 import com.android.systemui.util.Assert;
 
 import java.util.ArrayList;
@@ -148,6 +151,7 @@ public class IconManager implements DemoModeCommandReceiver {
             case TYPE_ICON -> addIcon(index, slot, blocked, holder.getIcon());
             case TYPE_WIFI_NEW -> addNewWifiIcon(index, slot);
             case TYPE_MOBILE_NEW -> addNewMobileIcon(index, slot, holder.getTag());
+            case TYPE_NETWORK_TRAFFIC -> addNetworkTraffic(index, slot);
             case TYPE_BINDABLE ->
                 // Safe cast, since only BindableIconHolders can set this tag on themselves
                 addBindableIcon((BindableIconHolder) holder, index);
@@ -160,6 +164,12 @@ public class IconManager implements DemoModeCommandReceiver {
         StatusBarIconView view = onCreateStatusBarIconView(slot, blocked);
         view.set(icon);
         mGroup.addView(view, index, onCreateLayoutParams(icon.shape));
+        return view;
+    }
+
+    protected NetworkTrafficSB addNetworkTraffic(int index, String slot) {
+        NetworkTrafficSB view = onCreateNetworkTraffic(slot);
+        mGroup.addView(view, index, onCreateLayoutParams());
         return view;
     }
 
@@ -218,6 +228,12 @@ public class IconManager implements DemoModeCommandReceiver {
 
     private ModernStatusBarWifiView onCreateModernStatusBarWifiView(String slot) {
         return ModernStatusBarWifiView.constructAndBind(mContext, slot, mWifiViewModel);
+    }
+
+    private NetworkTrafficSB onCreateNetworkTraffic(String slot) {
+         NetworkTrafficSB view = new NetworkTrafficSB(mContext);
+         view.setPadding(2, 0, 2, 0);
+         return view;
     }
 
     private ModernStatusBarMobileView onCreateModernStatusBarMobileView(
