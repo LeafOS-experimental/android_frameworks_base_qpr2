@@ -441,7 +441,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
     /** Should only be called from {@link KeyguardStatusBarViewController}. */
     void onOverlayChanged() {
         final int carrierTheme = R.style.TextAppearance_StatusBar_Clock;
-        mCarrierLabel.setTextAppearance(carrierTheme);
+        mCarrierLabel.setTextAppearance(R.style.TextAppearance_StatusBar_Clock);
         mBatteryView.updatePercentView();
 
         final int userSwitcherTheme = R.style.TextAppearance_StatusBar_UserChip;
