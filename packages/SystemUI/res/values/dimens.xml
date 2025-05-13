@@ -2114,4 +2114,6 @@
     <dimen name="volume_panel_slice_vertical_padding">8dp</dimen>
     <dimen name="volume_panel_slice_horizontal_padding">24dp</dimen>
     <!-- Volume end -->
+    <!-- QS A11 Style -->
+    <dimen name="custom_qs_panel_padding_top">0dp</dimen>
 </resources>
